@@ -5,13 +5,18 @@
  */
 package calculatorwindow;
 
+import java.util.Observable;
+import java.util.Observer;
+
 /**
  *
  * @author Will_and_Sara
  */
-public class ExpressionWindow extends javax.swing.JPanel {
+public class ExpressionWindow extends javax.swing.JPanel implements Observer{
     private ParseTreeNodes.ParseTreeNode _Tree;
     private Parser.Parser _Parser;
+    public ParseTreeNodes.ParseTreeNode GetTree(){return _Tree;}
+    
     /**
      * Creates new form ExpressionWindow
      */
@@ -19,6 +24,8 @@ public class ExpressionWindow extends javax.swing.JPanel {
         initComponents();
         ParseTreeNodes.ParseTreeNode.InitializeParseTreeNode();
         _Parser = new Parser.Parser();
+        _Parser.addObserver(this);
+        
     }
 
     /**
@@ -37,12 +44,6 @@ public class ExpressionWindow extends javax.swing.JPanel {
         jTextArea1.setRows(5);
         jTextArea1.setName("ExpressionTextBox"); // NOI18N
         jTextArea1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTextArea1KeyTyped(evt);
-            }
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTextArea1KeyPressed(evt);
-            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextArea1KeyReleased(evt);
             }
@@ -63,35 +64,39 @@ public class ExpressionWindow extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextArea1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea1KeyTyped
-
-    }//GEN-LAST:event_jTextArea1KeyTyped
-
     private void jTextArea1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea1KeyReleased
-        // TODO add your handling code here:
-//        System.out.println("Released");
-//        System.out.println("Text: " + jTextArea1.getText());
+
         if(!jTextArea1.getText().equals("")){
             ParseTreeNodes.ParseTreeNode.ClearSyntaxErrors();
             _Tree = _Parser.Parse(jTextArea1.getText());
+            
             if(_Tree.ContainsSyntaxErrors()){
                 for(String s : _Tree.GetSyntaxErrors()){
                     System.out.println(s);
                 }
             }else{
+                
                 System.out.println(_Tree.ToString());
                 System.out.println(_Tree.Evaluate().Result());
+                this.firePropertyChange("Tree", _Tree, _Tree);//i believe this allows me to listen for this event in the parent.
             }
         }
     }//GEN-LAST:event_jTextArea1KeyReleased
-
-    private void jTextArea1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea1KeyPressed
-    
-    }//GEN-LAST:event_jTextArea1KeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void update(Observable o, Object arg) {
+        ParseTreeNodes.Token args = (ParseTreeNodes.Token)arg;
+        if(args.GetToken()==ParseTreeNodes.Tokens.ERR){
+            
+        }else{
+            System.out.println(args.GetString() + " at position " + args.GetPosition());
+        }
+        
+    }
 }
