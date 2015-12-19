@@ -22,7 +22,7 @@ public class ExpressionWindow extends javax.swing.JPanel implements Observer{
      */
     public ExpressionWindow() {
         initComponents();
-        ParseTreeNodes.ParseTreeNode.InitializeParseTreeNode();
+        //ParseTreeNodes.ParseTreeNode.InitializeParseTreeNode();
         _Parser = new Parser.Parser();
         _Parser.addObserver(this);
         
@@ -67,19 +67,29 @@ public class ExpressionWindow extends javax.swing.JPanel implements Observer{
     private void jTextArea1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea1KeyReleased
 
         if(!jTextArea1.getText().equals("")){
-            ParseTreeNodes.ParseTreeNode.ClearSyntaxErrors();
+            //ParseTreeNodes.ParseTreeNode.ClearSyntaxErrors();
             _Tree = _Parser.Parse(jTextArea1.getText());
-            
-            if(_Tree.ContainsSyntaxErrors()){
-                for(String s : _Tree.GetSyntaxErrors()){
+            if(_Parser.ContainsErrors()){
+                for(String s : _Parser.GetErrors()){
                     System.out.println(s);
                 }
-            }else{
-                
-                System.out.println(_Tree.ToString());
-                System.out.println(_Tree.Evaluate().Result());
-                this.firePropertyChange("Tree", _Tree, _Tree);//i believe this allows me to listen for this event in the parent.
             }
+                if(_Tree.ContainsSyntaxErrors()){
+                    for(String s : _Tree.GetSyntaxErrors()){
+                        System.out.println(s);
+                    }
+                }else{
+                    System.out.println(_Tree.ToString());
+                    System.out.println(_Tree.Evaluate().Result());
+                    if(_Tree.ContainsComputeErrors()){
+                        for(String s :_Tree.GetComputeErrors()){
+                            System.out.println(s);
+                        }
+                    }
+                    this.firePropertyChange("Tree", _Tree, _Tree);//i believe this allows me to listen for this event in the parent.
+                }
+            
+
         }
     }//GEN-LAST:event_jTextArea1KeyReleased
 
