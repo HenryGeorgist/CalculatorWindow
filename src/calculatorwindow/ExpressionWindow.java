@@ -28,30 +28,27 @@ import javax.swing.text.StyleContext;
  *
  * @author Q0HECWPL
  */
-public class ExpressWindow extends JTextPane implements Observer{
+public class ExpressionWindow extends JTextPane implements Observer{
     private ParseTreeNodes.ParseTreeNode _Tree;
     private Parser.Parser _Parser;
-    private String _Text = "";
-    public ExpressWindow(){
+    public ExpressionWindow(){
         _Parser = new Parser.Parser();
         _Parser.addObserver(this);
         this.addMouseListener(new TextClickListener(this));
         this.addMouseMotionListener(new TextMotionListener(this));
-        //this.addKeyListener(new java.awt.event.KeyAdapter() {public void keyReleased(java.awt.event.KeyEvent evt) {parseText(evt);}});
-        this.addKeyListener(new java.awt.event.KeyAdapter() {public void keyPressed(java.awt.event.KeyEvent evt) {SetText(evt);}});
-        this.addKeyListener(new java.awt.event.KeyAdapter() {public void keyTyped(java.awt.event.KeyEvent evt) {Consume(evt);}});
+        this.addKeyListener(new java.awt.event.KeyAdapter() {public void keyReleased(java.awt.event.KeyEvent evt) {Consume(evt);}});
     }
     private void Consume(java.awt.event.KeyEvent evt){
         //this.setText("");
-        evt.consume();
-        if(!_Text.equals("")){
+        //evt.consume();
+        if(!this.getText().equals("")){
             //ParseTreeNodes.ParseTreeNode.ClearSyntaxErrors();
-            _Tree = _Parser.Parse(_Text);
+            _Tree = _Parser.Parse(this.getText());
             if(_Parser.ContainsErrors()){
                 for(String s : _Parser.GetErrors()){
                     System.out.println("Parse Error: " + s);
                 }
-                this.setText(_Text);
+                //this.setText(_Text);
             }
             if(_Tree.ContainsSyntaxErrors()){
                 for(String s : _Tree.GetSyntaxErrors()){
@@ -69,66 +66,6 @@ public class ExpressWindow extends JTextPane implements Observer{
             }
         }
     }
-    private void SetText(java.awt.event.KeyEvent evt){
-//        if(evt.isShiftDown()){
-//            switch(evt.getKeyCode()){
-//                case 1://exclamation point
-//                    _Text += "!";
-//                    break;
-//                case 6://exponent
-//                    _Text += "^";
-//                    break;
-//                case 7://andperstand
-//                    _Text += "&";
-//                    break;
-//                case 8: // multiply
-//                    _Text += "*";
-//                    break;
-//                case 9://left paren
-//                    _Text += "(";
-//                    break;
-//                case 10: //right paren
-//                    _Text += ")";
-//                    break;
-//                case 188:// lt
-//                    _Text += "<";
-//                    break;
-//                case 190://gt
-//                    _Text += ">";
-//                    break;
-//                default:
-//                    //unknown
-//                    break;
-//            }
-//        }else{
-            switch (evt.getKeyCode()){//http://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
-                case 8://backspace
-                    //check carat position
-                    //check if there is selected text.
-    //                this.getCaret();
-    //                if(this.getSelectedText().equals("")){
-    //                    this.getSelectionEnd();
-    //                    this.getSelectionStart();
-    //                }
-
-                    if(_Text.length()>0){_Text = _Text.substring(0, _Text.length() -1);}
-                    break;
-                case 13://enter
-                    break;
-                case 16: //shift
-                    break;
-                case 46://delete
-                    break;
-                default:
-                    _Text += evt.getKeyChar();
-                    break;
-            }
-//        }
-        
-
-        evt.consume();
-        this.setText("");
-    }
     @Override
     public void update(Observable o, Object arg) {
         ParseTreeNodes.Token args = (ParseTreeNodes.Token)arg;
@@ -136,11 +73,11 @@ public class ExpressWindow extends JTextPane implements Observer{
         }else if(args.GetToken()==ParseTreeNodes.Tokens.EOF){    
         }else{
             if(args.GetHelpFile().equals("")){
-                try {
-                    this.getStyledDocument().insertString(args.GetPosition()-1, args.GetString(), null);
-                } catch (BadLocationException ex) {
-                    Logger.getLogger(ExpressWindow.class.getName()).log(Level.SEVERE, null, ex);
-                }
+//                try {
+//                    this.getStyledDocument().insertString(args.GetPosition()-1, args.GetString(), null);
+//                } catch (BadLocationException ex) {
+//                    Logger.getLogger(ExpressWindow.class.getName()).log(Level.SEVERE, null, ex);
+//                }
             }else{
                 try {//https://community.oracle.com/thread/2089990?start=0&tstart=0
                     Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
@@ -148,6 +85,15 @@ public class ExpressWindow extends JTextPane implements Observer{
                     StyleConstants.setForeground(regularBlue, Color.BLUE);
                     StyleConstants.setUnderline(regularBlue,true);
                     regularBlue.addAttribute("linkact",new URLLinkAction(args.GetHelpFile()));
+                    String text = this.getText();
+                    String firstpart  = text.substring(0,args.GetPosition()-1);
+                    String secondpart = "";
+                    if(args.GetPosition()-1+args.GetString().length() >= text.length()){
+                        
+                    }else{
+                        secondpart = text.substring(args.GetPosition()-1+args.GetString().length(),text.length());
+                    }
+                    this.setText(firstpart + secondpart);
                     this.getStyledDocument().insertString(args.GetPosition()-1, args.GetString(),regularBlue);
                 } catch (BadLocationException ex) {
                     Logger.getLogger(ExpressWindow.class.getName()).log(Level.SEVERE, null, ex);

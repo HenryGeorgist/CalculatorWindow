@@ -9,6 +9,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,8 +23,18 @@ public class TestWindow extends javax.swing.JFrame implements PropertyChangeList
     /**
      * Creates new form TestWindow
      */
-    public TestWindow() {
+    public TestWindow() throws NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         initComponents();
+        List<Class<?>> clazzes = Reflector.getClassesForPackage(ParseTreeNodes.ParseTreeNode.class.getPackage());
+        ParseTreeNodes.IDisplayToTreeNode D;
+        for(Class<?> C : clazzes){
+            if(C.getInterfaces().length>0){
+                D = (ParseTreeNodes.IDisplayToTreeNode)C.getConstructor().newInstance();
+                System.out.println(D.DisplayName());
+            }
+        }
+        
+        //System.out.println("Yes");
     }
 
     /**
@@ -94,13 +108,19 @@ public class TestWindow extends javax.swing.JFrame implements PropertyChangeList
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                TestWindow T= new TestWindow();
-                ExpressWindow EW = new ExpressWindow();
-                EW.addPropertyChangeListener(T);
-                EW.setSize(200,80);
-                T.getContentPane().add(EW);
-                T.pack();
-                T.setVisible(true);
+                TestWindow T;
+                try {
+                    T = new TestWindow();
+                    ExpressionWindow EW = new ExpressionWindow();
+                    EW.addPropertyChangeListener(T);
+                    EW.setSize(200,80);
+                    T.getContentPane().add(EW);
+                    T.pack();
+                    T.setVisible(true);
+                } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    Logger.getLogger(TestWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
                 //new TestWindow().setVisible(true);
             }
         });
