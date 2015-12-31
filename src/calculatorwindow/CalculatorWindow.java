@@ -5,6 +5,10 @@
  */
 package calculatorwindow;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Will_and_Sara
@@ -16,8 +20,10 @@ public class CalculatorWindow {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        TestWindow T = new TestWindow();
+        TestWindow T;
+        T = new TestWindow();
         T.setVisible(true);
+        
     }
     
 }
