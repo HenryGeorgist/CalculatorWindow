@@ -9,29 +9,31 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.tree.DefaultTreeModel;
 
 /**
  *
  * @author Will_and_Sara
  */
 public class FunctionTree extends javax.swing.JTree{
-    public FunctionTree(javax.swing.tree.DefaultMutableTreeNode node, boolean askallowchildren){
-        super(node,askallowchildren);
-    }
     public FunctionTree(){
+       super(CreateRoot());
+       this.setRootVisible(false);
+       javax.swing.tree.DefaultTreeCellRenderer renderer = new javax.swing.tree.DefaultTreeCellRenderer();
+       renderer.setLeafIcon(null);
+       this.setCellRenderer(renderer);
+    }
+    private static javax.swing.tree.DefaultTreeModel CreateRoot(){
         List<Class<?>> clazzes = Reflector.getClassesForPackage(ParseTreeNodes.ParseTreeNode.class.getPackage());
         ParseTreeNodes.IDisplayToTreeNode D;
+        javax.swing.tree.DefaultMutableTreeNode root = new javax.swing.tree.DefaultMutableTreeNode("ROOT",true);
+        javax.swing.tree.DefaultMutableTreeNode node;
         for(Class<?> C : clazzes){
             for(Class<?> I : C.getInterfaces()){
                 if(I.getName().equals("ParseTreeNodes.IDisplayToTreeNode")){
                     try {
                         D = (ParseTreeNodes.IDisplayToTreeNode)C.getConstructor().newInstance();
-                        System.out.println(D.DisplayName());
-                        javax.swing.tree.DefaultMutableTreeNode root = new javax.swing.tree.DefaultMutableTreeNode(D.DisplayName());
-                        super.setRootVisible(true);
-                        super.updateUI();
-                        super.setModel(new DefaultTreeModel(root,true));
+                        node = new javax.swing.tree.DefaultMutableTreeNode(D.DisplayName(),false);
+                        root.add(node);
                     } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                         Logger.getLogger(FunctionTree.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -39,5 +41,6 @@ public class FunctionTree extends javax.swing.JTree{
                 } 
             }
         }
+        return new javax.swing.tree.DefaultTreeModel(root, true);
     }
 }

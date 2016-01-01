@@ -101,14 +101,12 @@ public class TestWindow extends javax.swing.JFrame implements PropertyChangeList
                     T = new TestWindow();
                     FunctionTree FT = new FunctionTree();
                     FT.setSize(200,80);
-                    FT.setLocation(300, 300);
+                    FT.setLocation(200,0);
                     ExpressionWindow EW = new ExpressionWindow();
                     EW.addPropertyChangeListener(T);
                     EW.setSize(200,80);
                     T.getContentPane().add(EW);
                     T.getContentPane().add(FT);
-                    System.out.println(FT.getSize().height);
-                    System.out.println(FT.getSize().width);
                     T.pack();
                     T.setVisible(true);
 
