@@ -100,7 +100,7 @@ public class TestWindow extends javax.swing.JFrame implements PropertyChangeList
                 TestWindow T;
                     T = new TestWindow();
                     FunctionTree FT = new FunctionTree();
-                    FT.setSize(200,80);
+                    FT.setSize(200,160);//place this in a scroll container.
                     FT.setLocation(200,0);
                     ExpressionWindow EW = new ExpressionWindow();
                     EW.addPropertyChangeListener(T);
@@ -109,9 +109,6 @@ public class TestWindow extends javax.swing.JFrame implements PropertyChangeList
                     T.getContentPane().add(FT);
                     T.pack();
                     T.setVisible(true);
-
-
-                //new TestWindow().setVisible(true);
             }
         });
     }

@@ -160,6 +160,7 @@ public class ExpressWindow extends JTextPane implements Observer{
         TextClickListener(JTextPane Pane){
             _Pane = Pane;
         }
+        @Override
         public void mouseClicked( MouseEvent e ) {
             try{//cannot access the textpane because this is a separate class.
                 Element elem = _Pane.getStyledDocument().getCharacterElement(_Pane.viewToModel(e.getPoint()));
