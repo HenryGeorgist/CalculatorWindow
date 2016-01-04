@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author Will_and_Sara
  */
-public class FunctionTree extends javax.swing.JTree{
+public class FunctionTree extends javax.swing.JTree implements java.util.Observer{
     public FunctionTree(){
        super(CreateRoot());
        this.setRootVisible(false);
@@ -26,19 +27,21 @@ public class FunctionTree extends javax.swing.JTree{
        renderer.setOpenIcon(null);
        renderer.setClosedIcon(null);
        this.setCellRenderer(renderer);
-       this.addMouseListener(new FunctionTreeMouseListener(this));
+       FunctionTreeMouseListener FTML = new FunctionTreeMouseListener(this);
+       FTML.addObserver(this);
+       this.addMouseListener(FTML);
     }
     private static javax.swing.tree.DefaultTreeModel CreateRoot(){
         List<Class<?>> clazzes = Reflector.getClassesForPackage(ParseTreeNodes.ParseTreeNode.class.getPackage());
         ParseTreeNodes.IDisplayToTreeNode D;
         javax.swing.tree.DefaultMutableTreeNode root = new javax.swing.tree.DefaultMutableTreeNode("ROOT",true);
-        javax.swing.tree.DefaultMutableTreeNode node;
+        FunctionTreeNode node;
         for(Class<?> C : clazzes){
             for(Class<?> I : C.getInterfaces()){
                 if(I.getName().equals("ParseTreeNodes.IDisplayToTreeNode")){
                     try {
                         D = (ParseTreeNodes.IDisplayToTreeNode)C.getConstructor().newInstance();
-                        node = new javax.swing.tree.DefaultMutableTreeNode(D.DisplayName(),false);
+                        node = new FunctionTreeNode(D);
                         boolean contains = false;
                         int index = 0;
                         String Path = D.getClass().getPackage().getName();
@@ -65,7 +68,16 @@ public class FunctionTree extends javax.swing.JTree{
         }
         return new javax.swing.tree.DefaultTreeModel(root, true);
     }
-    private class FunctionTreeMouseListener implements MouseListener{
+
+    @Override
+    public void update(Observable o, Object arg) {
+        //check to make sure it is a FunctionTreeNode, and then redirect with a property changed listener?
+        if(arg.getClass().getName().equals("calculatorwindow.FunctionTreeNode")){
+            FunctionTreeNode FTN = (FunctionTreeNode)arg;
+            this.firePropertyChange("TextToInsert", "", FTN.GetSyntax());
+        }
+    }
+    private class FunctionTreeMouseListener extends java.util.Observable implements MouseListener {
         private javax.swing.JTree _Tree;
         public FunctionTreeMouseListener(javax.swing.JTree Tree){
             _Tree = Tree;
@@ -74,23 +86,43 @@ public class FunctionTree extends javax.swing.JTree{
         public void mouseClicked(MouseEvent e) {
             if(e.getClickCount()==2 && javax.swing.SwingUtilities.isLeftMouseButton(e)){
                 //raise event to notify window that text needs to be inserted where the carat position was last captured. 
-                int row = _Tree.getClosestRowForLocation(e.getX(), e.getY());
-                _Tree.setSelectionRow(row);
-                System.out.println(row);
-                System.out.println(e.getComponent());
-                //_Tree.popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                javax.swing.tree.TreePath Path = _Tree.getPathForLocation(e.getX(), e.getY());
+                Object bla = Path.getLastPathComponent();
+                if(bla.getClass().getName().equals("calculatorwindow.FunctionTreeNode")){
+                    FunctionTreeNode FTN = (FunctionTreeNode)Path.getLastPathComponent();
+                    this.setChanged();
+                    this.notifyObservers(FTN);
+                }
             }
         }
         @Override
         public void mousePressed(MouseEvent e) {
             if(e.isPopupTrigger()){
                 //make a pop up based on the tree node.
+                javax.swing.tree.TreePath Path = _Tree.getPathForLocation(e.getX(), e.getY());
+                Object bla = Path.getLastPathComponent();
+                if(bla.getClass().getName().equals("calculatorwindow.FunctionTreeNode")){
+                    FunctionTreeNode FTN = (FunctionTreeNode)Path.getLastPathComponent();
+                    javax.swing.JPopupMenu popup = new javax.swing.JPopupMenu();
+                    javax.swing.JMenuItem MI =new javax.swing.JMenuItem("Get Help for: " + FTN.GetDisplayName());
+                    //MI.addMouseListener(l);
+                    popup.add(MI);
+                    popup.show(_Tree,e.getX(),e.getY());
+                }
             }
         }
         @Override
         public void mouseReleased(MouseEvent e) {
             if(e.isPopupTrigger()){
                 //make a pop up based on the tree node.
+                javax.swing.tree.TreePath Path = _Tree.getPathForLocation(e.getX(), e.getY());
+                Object bla = Path.getLastPathComponent();
+                if(bla.getClass().getName().equals("calculatorwindow.FunctionTreeNode")){
+                    FunctionTreeNode FTN = (FunctionTreeNode)Path.getLastPathComponent();
+                    javax.swing.JPopupMenu popup = new javax.swing.JPopupMenu();
+                    popup.add(new javax.swing.JMenuItem("Get Help for: " + FTN.GetDisplayName()));
+                    popup.show(_Tree,e.getX(),e.getY());
+                }
             }
         }
         @Override

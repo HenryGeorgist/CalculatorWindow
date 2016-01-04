@@ -21,4 +21,5 @@ public class FunctionTreeNode extends javax.swing.tree.DefaultMutableTreeNode{
     public String GetSyntax(){
         return _Node.Syntax();
     }
+    public String GetDisplayName(){return _Node.DisplayName();}
 }

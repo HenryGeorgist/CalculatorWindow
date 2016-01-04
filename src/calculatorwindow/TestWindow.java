@@ -96,22 +96,25 @@ public class TestWindow extends javax.swing.JFrame implements PropertyChangeList
         //</editor-fold>
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 TestWindow T;
-                    T = new TestWindow();
-                    FunctionTree FT = new FunctionTree();
-                    FT.setSize(200,160);//place this in a scroll container.
-                    FT.setLocation(200,0);
-                    ExpressionWindow EW = new ExpressionWindow();
-                    EW.addPropertyChangeListener(T);
-                    EW.setSize(200,80);
-                    T.getContentPane().add(EW);
-                    T.getContentPane().add(FT);
-                    T.pack();
-                    T.setVisible(true);
+                T = new TestWindow();
+                FunctionTree FT = new FunctionTree();
+                FT.setSize(200,160);//place this in a scroll container.
+                FT.setLocation(200,0);
+                ExpressionWindow EW = new ExpressionWindow();
+                EW.addPropertyChangeListener(T);
+                FT.addPropertyChangeListener(EW);
+                EW.setSize(200,80);
+                T.getContentPane().add(EW);
+                T.getContentPane().add(FT);
+                T.pack();
+                T.setVisible(true);
             }
         });
     }
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         //System.out.println("Name      = " + evt.getPropertyName());
         //System.out.println("Old Value = " + evt.getOldValue());

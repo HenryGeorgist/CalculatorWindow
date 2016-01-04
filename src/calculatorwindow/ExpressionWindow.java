@@ -8,8 +8,12 @@ package calculatorwindow;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -28,12 +32,14 @@ import javax.swing.text.StyleContext;
  *
  * @author Q0HECWPL
  */
-public class ExpressionWindow extends JTextPane implements Observer{
+public class ExpressionWindow extends JTextPane implements Observer, PropertyChangeListener{
     private ParseTreeNodes.ParseTreeNode _Tree;
     private Parser.Parser _Parser;
+    private int _CaretPosition;
     public ExpressionWindow(){
         _Parser = new Parser.Parser();
         _Parser.addObserver(this);
+        this.addFocusListener(new TextFocusListener(this));
         this.addMouseListener(new TextClickListener(this));
         this.addMouseMotionListener(new TextMotionListener(this));
         this.addKeyListener(new java.awt.event.KeyAdapter() {public void keyReleased(java.awt.event.KeyEvent evt) {Consume(evt);}});
@@ -100,6 +106,37 @@ public class ExpressionWindow extends JTextPane implements Observer{
                 }                
             }
         }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if("TextToInsert".equals(evt.getPropertyName())){
+                    String text = this.getText();
+                    String firstpart  = text.substring(0,_CaretPosition);
+                    String secondpart = "";
+                    if(text.length() == _CaretPosition){
+                        
+                    }else{
+                        secondpart = text.substring(_CaretPosition,text.length());
+                    }
+            this.setText(firstpart + (String)evt.getNewValue()+ secondpart);//insert based on carat position.
+        }
+    }
+    private class TextFocusListener implements FocusListener {
+        private JTextPane _Pane;
+        public TextFocusListener(JTextPane Pane){
+            _Pane = Pane;
+        }
+        @Override
+        public void focusGained(FocusEvent e) {
+            _CaretPosition = _Pane.getCaretPosition();
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            _CaretPosition = _Pane.getCaretPosition();
+        }
+        
     }
     private class TextClickListener extends MouseAdapter {
         private JTextPane _Pane;
