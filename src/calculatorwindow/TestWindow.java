@@ -100,15 +100,37 @@ public class TestWindow extends javax.swing.JFrame implements PropertyChangeList
             public void run() {
                 TestWindow T;
                 T = new TestWindow();
+                
+                //initialize the test data, it should be a series of column names, their output types, and some sample data (the first row of a dbf)
+                String[] cols = {"A","B","C"};
+                ParseTreeNodes.TypeEnum[] types = {ParseTreeNodes.TypeEnum.DOUBLE,ParseTreeNodes.TypeEnum.STRING,ParseTreeNodes.TypeEnum.BOOLEAN};
+                Object[] SampleData = {2.0,"exhibit B",true};
+                
+                //create a function tree, this allows the user to see the available functions, quiery their help, and insert their syntax.
                 FunctionTree FT = new FunctionTree();
                 FT.setSize(200,160);//place this in a scroll container.
                 FT.setLocation(200,0);
-                ExpressionWindow EW = new ExpressionWindow();
+                
+                //create a varable tree, this will show the user the availabe variables to include in their computation, currently it is simply the name of the column.  this can have the type added as a tooltip or something.
+                VariableTree VT = new VariableTree(cols);
+                VT.setSize(200,80);
+                VT.setLocation(0,90);
+                
+                //create an expression window, the expression window does the work, it needs all of the initial data so that the expression can be tested for validity, and so that example output can be shown.
+                ExpressionWindow EW = new ExpressionWindow(cols,types,SampleData);
+                
+                //this listener allows the calculator to show the expression and output if the designer so chooses.
                 EW.addPropertyChangeListener(T);
+                
+                //This listener allows the function tree to insert syntax to the expression window.
                 FT.addPropertyChangeListener(EW);
+                
+                //this listener allows the variable tree to insert column nmaes with the correct syntax into the expression window.
+                VT.addPropertyChangeListener(EW);
                 EW.setSize(200,80);
                 T.getContentPane().add(EW);
                 T.getContentPane().add(FT);
+                T.getContentPane().add(VT);
                 T.pack();
                 T.setVisible(true);
             }

@@ -35,9 +35,13 @@ import javax.swing.text.StyleContext;
 public class ExpressionWindow extends JTextPane implements Observer, PropertyChangeListener{
     private ParseTreeNodes.ParseTreeNode _Tree;
     private Parser.Parser _Parser;
+    private Object[] _VariableSampleData;
     private int _CaretPosition;
-    public ExpressionWindow(){
+    public ExpressionWindow(String[] VariableNames, ParseTreeNodes.TypeEnum[] VariableTypes, Object[] SampleData){
         _Parser = new Parser.Parser();
+        _Parser.SetColumnNames(VariableNames);
+        _Parser.SetTypes(VariableTypes);
+        _VariableSampleData = SampleData;
         _Parser.addObserver(this);
         this.addFocusListener(new TextFocusListener(this));
         this.addMouseListener(new TextClickListener(this));
@@ -61,6 +65,7 @@ public class ExpressionWindow extends JTextPane implements Observer, PropertyCha
                     System.out.println("Syntax Error: " + s);
                 }
             }else{
+                _Tree.Update(_VariableSampleData);
                 System.out.println(_Tree.ToString());
                 System.out.println(_Tree.Evaluate().Result());
                 if(_Tree.ContainsComputeErrors()){
@@ -68,6 +73,7 @@ public class ExpressionWindow extends JTextPane implements Observer, PropertyCha
                         System.out.println("Compute Error: " + s);
                     }
                 }
+                
                 this.firePropertyChange("Tree", null, _Tree);//i believe this allows me to listen for this event in the parent.
             }
         }
