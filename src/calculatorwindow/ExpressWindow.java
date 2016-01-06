@@ -28,6 +28,7 @@ import javax.swing.text.StyleContext;
  *
  * @author Q0HECWPL
  */
+@Deprecated
 public class ExpressWindow extends JTextPane implements Observer{
     private ParseTreeNodes.ParseTreeNode _Tree;
     private Parser.Parser _Parser;

@@ -5,10 +5,8 @@
         <group>
             <file>file:/Users/Will_and_Sara/NetBeansProjects/CalculatorWindow/src/calculatorwindow/FunctionTree.java</file>
             <file>file:/Users/Will_and_Sara/NetBeansProjects/CalculatorWindow/src/calculatorwindow/ExpressionWindow.java</file>
-            <file>file:/Users/Will_and_Sara/NetBeansProjects/CalculatorWindow/src/calculatorwindow/FunctionTreeNode.java</file>
-            <file>file:/Users/Will_and_Sara/NetBeansProjects/CalculatorWindow/src/calculatorwindow/ExpressWindow.java</file>
+            <file>file:/Users/Will_and_Sara/NetBeansProjects/CalculatorWindow/src/calculatorwindow/VariableTree.java</file>
             <file>file:/Users/Will_and_Sara/NetBeansProjects/CalculatorWindow/src/calculatorwindow/TestWindow.java</file>
-            <file>file:/Users/Will_and_Sara/NetBeansProjects/CalculatorWindow/src/calculatorwindow/CalculatorWindow.java</file>
         </group>
     </open-files>
 </project-private>
