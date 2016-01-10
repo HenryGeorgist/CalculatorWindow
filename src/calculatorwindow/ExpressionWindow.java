@@ -30,7 +30,7 @@ import javax.swing.text.StyleContext;
 
 /**
  *
- * @author Q0HECWPL
+ * @author Will_and_Sara
  */
 public class ExpressionWindow extends JTextPane implements Observer, PropertyChangeListener{
     private ParseTreeNodes.ParseTreeNode _Tree;

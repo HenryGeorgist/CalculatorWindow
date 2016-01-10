@@ -16,7 +16,7 @@ import java.util.jar.JarFile;
 
 /**
  *
- * @author Q0HECWPL
+ * @author someone on github, dont remember who, sorry...
  */
 public class Reflector {
     	private static void log(String msg) {
