@@ -6,6 +6,7 @@
 package calculatorwindow;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import databasereader.AbstractReader;
 /**
  *
  * @author Will_and_Sara
@@ -13,6 +14,7 @@ import java.beans.PropertyChangeListener;
 public class Window extends javax.swing.JFrame implements PropertyChangeListener{
     private javax.swing.JScrollPane FTSP;
     private javax.swing.JScrollPane VTSP;
+    private AbstractReader reader;
 
     /**
      * Creates new form Window
@@ -20,9 +22,11 @@ public class Window extends javax.swing.JFrame implements PropertyChangeListener
     public Window() {
         initComponents();
         //initialize the test data, it should be a series of column names, their output types, and some sample data (the first row of a dbf)
-        String[] cols = {"A","B","C"};
-        ParseTreeNodes.TypeEnum[] types = {ParseTreeNodes.TypeEnum.DOUBLE,ParseTreeNodes.TypeEnum.STRING,ParseTreeNodes.TypeEnum.BOOLEAN};
-        Object[] SampleData = {2.0,"exhibit B",true};
+        reader = new databasereader.DBFReader("/Users/Will_and_Sara/Desktop/RUS_Structures.dbf");
+        
+        //String[] cols = {"A","B","C"};
+        //ParseTreeNodes.TypeEnum[] types = {ParseTreeNodes.TypeEnum.DOUBLE,ParseTreeNodes.TypeEnum.STRING,ParseTreeNodes.TypeEnum.BOOLEAN};
+        //Object[] SampleData = {2.0,"exhibit B",true};
 
         //create a function tree, this allows the user to see the available functions, quiery their help, and insert their syntax.
 
@@ -34,7 +38,7 @@ public class Window extends javax.swing.JFrame implements PropertyChangeListener
         FTSP.setLocation(220,10);
         
         //create a varable tree, this will show the user the availabe variables to include in their computation, currently it is simply the name of the column.  this can have the type added as a tooltip or something.
-        VariableTree VT = new VariableTree(cols);
+        VariableTree VT = new VariableTree(reader.getColumnNames());
         VTSP = new javax.swing.JScrollPane(VT);
         VTSP.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         VTSP.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -42,7 +46,7 @@ public class Window extends javax.swing.JFrame implements PropertyChangeListener
         VTSP.setLocation(10,10);
 
         //create an expression window, the expression window does the work, it needs all of the initial data so that the expression can be tested for validity, and so that example output can be shown.
-        ExpressionWindow EW = new ExpressionWindow(cols,types,SampleData);
+        ExpressionWindow EW = new ExpressionWindow(reader.getColumnNames(),ReaderTypesToParserTypes(),reader.getRow(0));
         EW.setSize(404,200);
         EW.setLocation(12,220);
 
@@ -61,7 +65,32 @@ public class Window extends javax.swing.JFrame implements PropertyChangeListener
         
 
     }
-
+    private ParseTreeNodes.TypeEnum[] ReaderTypesToParserTypes(){
+        ParseTreeNodes.TypeEnum[] output = null;
+        if(null!=reader){
+            output = new ParseTreeNodes.TypeEnum[reader.getNumberOfColumns()];
+            for(int i = 0; i <reader.getNumberOfColumns();i++){
+                switch(reader.getColumnTypes()[i]){
+                    case STRING:
+                        output[i] = ParseTreeNodes.TypeEnum.STRING;
+                        break;
+                    case BOOLEAN:
+                        output[i] = ParseTreeNodes.TypeEnum.BOOLEAN;
+                        break;
+                    case INT:
+                        output[i] = ParseTreeNodes.TypeEnum.LONG;
+                        break;
+                    case DOUBLE:
+                        output[i] = ParseTreeNodes.TypeEnum.DOUBLE;
+                        break;
+                    default:
+                        output[i] = ParseTreeNodes.TypeEnum.STRING;
+                        break;
+                }
+            }
+        }
+        return output;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
