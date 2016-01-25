@@ -27,14 +27,14 @@ ExpressionWindow EW = new ExpressionWindow(cols,types,SampleData);
 ```
 To evaluate the expression for the first row, the PropertyChanged event must be monitored for the "Tree" argument.
 ```java
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if("Tree".equals(evt.getPropertyName())){
-            ParseTreeNodes.ParseTreeNode tree = (ParseTreeNodes.ParseTreeNode)evt.getNewValue();
-            ExpressionLabel.setText(tree.ToString());
-            ResultLabel.setText(tree.Evaluate().Result().toString());
-        }
+@Override
+public void propertyChange(PropertyChangeEvent evt) {
+    if("Tree".equals(evt.getPropertyName())){
+        ParseTreeNodes.ParseTreeNode tree = (ParseTreeNodes.ParseTreeNode)evt.getNewValue();
+        ExpressionLabel.setText(tree.ToString());
+        ResultLabel.setText(tree.Evaluate().Result().toString());
     }
+}
 ```
 Above you can see the text for the expression was being set for display into a label, and the result was being set for display into a different label.
 
@@ -43,12 +43,12 @@ A VariableTree shows the user the available columns in the attached dbfreader (o
 
 Here is an example of initilization of the VariableTree:
 ```java
-        //create an ExpressionWindow with some available columns...
-        ExpressionWindow EW = new ExpressionWindow(cols,types,SampleData);
-        //create a varable tree, this will show the user the availabe variables to include in their computation.
-        VariableTree VT = new VariableTree(reader.getColumnNames());
-        //this listener allows the variable tree to insert column nmaes with the correct syntax into the expression window.
-        VT.addPropertyChangeListener(EW);
+//create an ExpressionWindow with some available columns...
+ExpressionWindow EW = new ExpressionWindow(cols,types,SampleData);
+//create a varable tree, this will show the user the availabe variables to include in their computation.
+VariableTree VT = new VariableTree(reader.getColumnNames());
+//this listener allows the variable tree to insert column nmaes with the correct syntax into the expression window.
+VT.addPropertyChangeListener(EW);
 ```
 As with the ExpressionWindow, if the VariableTree is added to the pallet it can be placed using the designer, but the programmer will still have to set the listener and initialize the VariableTree.  Notice that the ExpressionWindow is the component monitoring for the property changed event in this case.
 
@@ -56,12 +56,12 @@ As with the ExpressionWindow, if the VariableTree is added to the pallet it can 
 The FunctionTree is much like the VariableTree, it is a list of the avalilable functions (currently only the prefix functions) that can be utilized in the ExpressionWindow.  Double clicking on a FunctionTree element will insert the proprer syntax for that prefix function into the expression window.
 
 ```java
-        //create an ExpressionWindow with some available columns...
-        ExpressionWindow EW = new ExpressionWindow(cols,types,SampleData);
-        //create a function tree, this allows the user to see the available functions, quiery their help, and insert their syntax.
-        FunctionTree FT = new FunctionTree();
-        //This listener allows the function tree to insert syntax to the expression window.
-        FT.addPropertyChangeListener(EW);
+//create an ExpressionWindow with some available columns...
+ExpressionWindow EW = new ExpressionWindow(cols,types,SampleData);
+//create a function tree, this allows the user to see the available functions, quiery their help, and insert their syntax.
+FunctionTree FT = new FunctionTree();
+//This listener allows the function tree to insert syntax to the expression window.
+FT.addPropertyChangeListener(EW);
 ```
 Again, if the user wishes to place this element with the designer, it must be added to the pallet, but the propertychangedlistener will still have to be defined properly.  As with the VariableTree, the ExpressionWindow is handling the propertyChanged event.
 
